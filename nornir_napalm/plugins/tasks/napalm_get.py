@@ -39,7 +39,7 @@ def napalm_get(
     for g in getters:
         options = copy.deepcopy(kwargs)
         options.update(getters_options.get(g, {}))
-        getter = g if g.startswith("get_") else "get_{}".format(g)
+        getter = g
         method = getattr(device, getter)
         result[g] = method(**options)
     return Result(host=task.host, result=result)
