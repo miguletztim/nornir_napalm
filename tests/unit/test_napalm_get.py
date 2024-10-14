@@ -23,18 +23,18 @@ class Test(object):
         opt = {"path": THIS_DIR + "/test_napalm_getters"}
         d = nornir.filter(name="dev3.group_2")
         d.run(task=connect, extras=opt)
-        result = d.run(napalm_get, getters=["facts", "interfaces"])
+        result = d.run(napalm_get, getters=["get_facts", "get_interfaces"])
         assert result
         for h, r in result.items():
-            assert r.result["facts"]
-            assert r.result["interfaces"]
+            assert r.result["get_facts"]
+            assert r.result["get_interfaces"]
 
     def test_napalm_getters_error(self, nornir):
         opt = {"path": THIS_DIR + "/test_napalm_getters_error"}
         d = nornir.filter(name="dev3.group_2")
         d.run(task=connect, extras=opt)
 
-        results = d.run(napalm_get, getters=["facts", "interfaces"])
+        results = d.run(napalm_get, getters=["get_facts", "get_interfaces"])
         processed = False
         for result in results.values():
             processed = True
@@ -45,7 +45,7 @@ class Test(object):
         opt = {"path": THIS_DIR + "/test_napalm_getters_single_with_options"}
         d = nornir.filter(name="dev3.group_2")
         d.run(task=connect, extras=opt)
-        result = d.run(task=napalm_get, getters=["config"], nonexistent="asdsa")
+        result = d.run(task=napalm_get, getters=["get_config"], nonexistent="asdsa")
         assert result
         assert result.failed
         for h, r in result.items():
@@ -57,8 +57,8 @@ class Test(object):
         d.run(task=connect, extras=opt)
         result = d.run(
             task=napalm_get,
-            getters=["config"],
-            getters_options={"config": {"nonexistent": "asdasd"}},
+            getters=["get_config"],
+            getters_options={"get_config": {"nonexistent": "asdasd"}},
         )
         assert result
         assert result.failed
@@ -69,11 +69,11 @@ class Test(object):
         opt = {"path": THIS_DIR + "/test_napalm_getters_single_with_options"}
         d = nornir.filter(name="dev3.group_2")
         d.run(task=connect, extras=opt)
-        result = d.run(task=napalm_get, getters=["config"], retrieve="candidate")
+        result = d.run(task=napalm_get, getters=["get_config"], retrieve="candidate")
         assert result
         assert not result.failed
         for h, r in result.items():
-            assert r.result["config"]
+            assert r.result["get_config"]
 
     def test_napalm_getters_multiple_with_options(self, nornir):
         opt = {"path": THIS_DIR + "/test_napalm_getters_multiple_with_options"}
@@ -81,11 +81,20 @@ class Test(object):
         d.run(task=connect, extras=opt)
         result = d.run(
             task=napalm_get,
-            getters=["config", "facts"],
-            getters_options={"config": {"retrieve": "candidate"}},
+            getters=["get_config", "get_facts"],
+            getters_options={"get_config": {"retrieve": "candidate"}},
         )
         assert result
         assert not result.failed
         for h, r in result.items():
-            assert r.result["config"]
-            assert r.result["facts"]
+            assert r.result["get_config"]
+            assert r.result["get_facts"]
+
+    def test_napalm_getters_without_prefix(self, nornir):
+        opt = {"path": THIS_DIR + "/test_napalm_getters_without_prefix"}
+        d = nornir.filter(name="dev3.group_2")
+        d.run(task=connect, extras=opt)
+        result = d.run(napalm_get, getters=["is_alive"])
+        assert result
+        for h, r in result.items():
+            assert r.result["is_alive"]
